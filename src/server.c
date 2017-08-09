@@ -7,8 +7,9 @@
 #include <unistd.h>
 #include "tags.h"
 
-int intervals[] = {20, 10, 20, 10, 20, 15};
+int *intervals = NULL;
 int intervals_size = 6;
+int default_intervals[] = {20, 5, 20, 5, 20, 15};
 int current_interval = 0;
 
 int get_remaining_sec(time_t *time_start, time_t now) {
@@ -21,18 +22,64 @@ int get_remaining_sec(time_t *time_start, time_t now) {
     return remaining_sec;
 }
 
+char* get_config_path() {
+    char *home = getenv("HOME");
+    char *dot_pomidor = ".pomidor";
+    char *filepath = malloc(strlen(home) + strlen(dot_pomidor) + 2);
+    sprintf(filepath, "%s/%s", home, dot_pomidor);
+    return filepath;
+}
 
+void set_default_intervals() {
+    intervals = malloc(intervals_size * sizeof(int));
+    if (!intervals_size) {
+        fprintf(stderr, "Can't allocate memory for interval array\n");
+        exit(0);
+    }
+    for (int i = 0; i < intervals_size; i++) {
+        intervals[i] = default_intervals[i];
+    }
+}
+
+void read_config() {
+    char *filepath = get_config_path();
+    FILE *config = fopen(filepath, "r");
+    set_default_intervals();
+
+    if (!config) {
+        printf("Can't find config file, setting default intervals\n");
+        return;
+    }
+
+    int i;
+    for (i = 0;; i++) {
+        int cur_interval;
+        if (fscanf(config, "%d", &cur_interval) > 0) {
+            int* new_intervals = realloc(intervals, (i + 1) * sizeof(int));
+            if (new_intervals) {
+                intervals = new_intervals;
+            } else {
+                fprintf(stderr, "Can't allocate memory for interval array\n");
+                free(intervals);
+                exit(0);
+            }
+            intervals[i] = cur_interval;
+        } else {
+            break;
+        }
+    }
+    intervals_size = i;
+}
 
 void start_server(char* program_name) {
     int server_socket, client_socket;
     int n_bind;
 
-    // initialize timer
     time_t time_start;
     time(&time_start);
+    read_config();
 
     struct sockaddr_in addr, client_addr;
-
 
     memset(&addr, 0, sizeof(struct sockaddr));
     addr.sin_family = AF_INET;
