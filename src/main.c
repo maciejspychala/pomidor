@@ -14,6 +14,9 @@
 #include "client.h"
 #include "tags.h"
 
+void print_time(int seconds) {
+    printf("%02d:%02d", seconds / 60, seconds % 60);
+}
 
 int main(int argc, char* argv[]) {
     // if start server
@@ -30,7 +33,7 @@ int main(int argc, char* argv[]) {
         char *flag = argv[1];
         if (strcmp(flag, "-g") == 0) {
             response = get_data(GET_TIME, 0);
-            printf("%d\n", response);
+            print_time(response);
             return 0;
         }
     }

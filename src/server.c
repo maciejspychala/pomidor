@@ -7,6 +7,22 @@
 #include <unistd.h>
 #include "tags.h"
 
+int intervals[] = {20, 10, 20, 10, 20, 15};
+int intervals_size = 6;
+int current_interval = 0;
+
+int get_remaining_sec(time_t *time_start, time_t now) {
+    int remaining_sec = (intervals[current_interval] * 60) - (now - *time_start);
+    if (remaining_sec <= 0) {
+        remaining_sec = 0;
+        current_interval = (current_interval + 1) % intervals_size;
+        *time_start = now;
+    }
+    return remaining_sec;
+}
+
+
+
 void start_server(char* program_name) {
     int server_socket, client_socket;
     int n_bind;
@@ -54,7 +70,7 @@ void start_server(char* program_name) {
 
         switch (data[0]) {
             case GET_TIME:
-                payload[0] = now - time_start;
+                payload[0] = get_remaining_sec(&time_start, now);
                 break;
             default:
                 payload[0] = -1;

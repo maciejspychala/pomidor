@@ -1,3 +1,8 @@
-build: main.c server.c client.c
-	gcc -o pomidor main.c server.c client.c -Wall
+all: pomidor
+
+pomidor: src/*.c
+	$(CC) -o pomidor $(wildcard src/*.c)
+
+clean:
+	rm pomidor
 
