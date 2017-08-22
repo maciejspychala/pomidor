@@ -6,6 +6,7 @@
 #include <netdb.h>
 #include <signal.h>
 #include <stdio.h>
+#include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
 #include <arpa/inet.h>
@@ -18,6 +19,16 @@ void print_time(int seconds) {
     printf("%02d:%02d", seconds / 60, seconds % 60);
 }
 
+void resolve_flag(char f) {
+    int32_t response;
+    switch (f) {
+        case 'g':
+            response = get_data(GET_TIME, 0);
+            print_time(response);
+            break;
+    }
+}
+
 int main(int argc, char* argv[]) {
     if (argc == 1) {
         if(fork() == 0) {
@@ -27,13 +38,10 @@ int main(int argc, char* argv[]) {
         }
     }
 
-    int32_t response = 0;
     if (argc == 2) {
         char *flag = argv[1];
-        if (strcmp(flag, "-g") == 0) {
-            response = get_data(GET_TIME, 0);
-            print_time(response);
-            return 0;
+        if (strlen(flag) == 2) {
+            resolve_flag(flag[1]);
         }
     }
 
