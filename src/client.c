@@ -30,14 +30,26 @@ int create_socket() {
     return sck;
 }
 
-int32_t get_data(int32_t tag, int32_t data) {
-
-    int sck = create_socket();
+void send_payload(int sck, int32_t tag, int32_t data) {
     int32_t payload[2] = {tag, data};
     write(sck, payload, BUF_SIZE);
+}
 
-    int32_t bufor[2];
-    read(sck, bufor, BUF_SIZE);
+
+void get_payload(int sck, void *payload) {
+    read(sck, payload, BUF_SIZE);
+}
+
+int32_t get_data(int32_t tag, int32_t data) {
+    int sck = create_socket();
+    send_payload(sck, tag, data);
+    int32_t buf[2];
+    get_payload(sck, buf);
     close(sck);
-    return bufor[0];
+    return buf[0];
+}
+
+void send_data (int32_t tag, int32_t data) {
+    int sck = create_socket();
+    send_payload(sck, tag, data);
 }

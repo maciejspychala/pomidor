@@ -4,5 +4,6 @@
 #include <stdint.h>
 
 int32_t get_data(int32_t tag, int32_t data);
+void send_data(int32_t tag, int32_t data);
 
 #endif
