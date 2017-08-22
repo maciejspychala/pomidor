@@ -7,10 +7,10 @@
 #include <unistd.h>
 #include "tags.h"
 
-int *intervals = NULL;
-int intervals_size = 6;
-int default_intervals[] = {20, 5, 20, 5, 20, 15};
-int current_interval = 0;
+static int *intervals = NULL;
+static int intervals_size = 6;
+static int default_intervals[] = {20, 5, 20, 5, 20, 15};
+static int current_interval = 0;
 
 int get_remaining_sec(time_t *time_start, time_t now) {
     int remaining_sec = (intervals[current_interval] * 60) - (now - *time_start);
@@ -69,6 +69,7 @@ void read_config() {
         }
     }
     intervals_size = i;
+    fclose(config);
 }
 
 void start_server(char* program_name) {
