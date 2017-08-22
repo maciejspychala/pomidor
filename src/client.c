@@ -8,7 +8,7 @@
 #include <stdint.h>
 #include "tags.h"
 
-int32_t get_data(int32_t tag, int32_t data) {
+int create_socket() {
     struct sockaddr_in sck_addr;
     int sck;
 
@@ -27,8 +27,13 @@ int32_t get_data(int32_t tag, int32_t data) {
         exit(EXIT_FAILURE);
     }
 
-    int32_t payload[2] = {tag, data};
+    return sck;
+}
 
+int32_t get_data(int32_t tag, int32_t data) {
+
+    int sck = create_socket();
+    int32_t payload[2] = {tag, data};
     write(sck, payload, BUF_SIZE);
 
     int32_t bufor[2];

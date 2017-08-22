@@ -19,7 +19,6 @@ void print_time(int seconds) {
 }
 
 int main(int argc, char* argv[]) {
-    // if start server
     if (argc == 1) {
         if(fork() == 0) {
             start_server(argv[0]);
